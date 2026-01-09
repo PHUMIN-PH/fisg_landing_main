@@ -3,12 +3,17 @@
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
+require('dotenv').config();
+
 module.exports = appInfo => {
   /**
    * built-in config
    * @type {Egg.EggAppConfig}
    **/
   const config = exports = {};
+
+  config.internalApiKey = process.env.INTERNAL_API_KEY;
+  config.internalApiSecret = process.env.INTERNAL_API_SECRET;
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1767929013003_7428';
