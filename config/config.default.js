@@ -15,6 +15,12 @@ module.exports = appInfo => {
   config.internalApiKey = process.env.INTERNAL_API_KEY;
   config.internalApiSecret = process.env.INTERNAL_API_SECRET;
 
+  console.log('API KEY:', config.internalApiKey);
+  console.log(
+    'API SECRET:',
+    config.internalApiSecret ? 'LOADED' : 'MISSING'
+  );
+
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1767929013003_7428';
 

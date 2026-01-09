@@ -8,7 +8,7 @@ module.exports = app => {
   router.post(
     '/api/internal/users/register',
     internalAuth,
-    controller.users.register
+    controller.register
   );
 };
 
