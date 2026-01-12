@@ -14,3 +14,6 @@ run/
 typings/
 .nyc_output/
 .env
+private.pem
+public.pem
+private_pkcs8.pem
