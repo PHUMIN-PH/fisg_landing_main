@@ -9,7 +9,7 @@ module.exports = app => {
       user_id: {
         type: STRING(36),
         primaryKey: true,
-        allowNull: false,
+        allowNull: true,
       },
 
       email: {

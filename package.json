@@ -10,6 +10,7 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
     "egg": "^3.17.5",
+    "egg-cors": "^3.0.1",
     "egg-scripts": "2",
     "egg-sequelize": "^6.0.0",
     "mysql2": "^3.16.0",

@@ -19,7 +19,7 @@ module.exports = app => {
 
       user_id: {
         type: STRING(36),
-        allowNull: false,
+        allowNull: true,
       },
 
       email: {

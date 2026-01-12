@@ -1747,7 +1747,7 @@
           encrypt.setPublicKey(atob(key));
           const encryptedKey = encrypt.encrypt(aesKey);
 
-          fetch("/api/register/deposit-and-trade-to-win2", {
+          fetch("http://127.0.0.1:7001/api/register/deposit-and-trade-to-win2", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

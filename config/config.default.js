@@ -16,9 +16,9 @@ module.exports = appInfo => {
     dialect: 'mysql',
     host: process.env.DB_HOST || '',
     port: process.env.DB_PORT || '',
-    database: process.env.DB_NAME || 'landing',
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'password88',
+    database: process.env.DB_NAME || '',
+    username: process.env.DB_USER || '',
+    password: process.env.DB_PASSWORD || '',
     timezone: '+00:00',
     dialectOptions: {
       socketPath: '/tmp/mysql.sock',
@@ -26,8 +26,30 @@ module.exports = appInfo => {
     logging: false,
   };
 
+  config.cors = {
+    origin: (ctx) => {
+      const allowList = [
+        'http://127.0.0.1:7001',
+        'http://localhost:7001',
+        'http://127.0.0.1:5500',   // ถ้าเปิด html ด้วย live server
+        'http://localhost:5500',
+        'https://www.fisg.com/', // prod
+      ];
+
+      const origin = ctx.get('origin');
+      if (allowList.includes(origin)) {
+        return origin;
+      }
+      return false; 
+    },
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+    allowHeaders: 'Content-Type, Authorization',
+    credentials: false, 
+  };
+
+
   config.crm = {
-    api2Key: process.env.CRM_API2_KEY,
+    apiPointsKey: process.env.CRM_API_POINTMALL_KEY,
   }
 
   config.multipart = {
@@ -35,10 +57,10 @@ module.exports = appInfo => {
   }
 
   config.turnstile = {
-  secretKey: process.env.TURNSTILE_SECRET_KEY,
-}
-// main confirmation
-config.pointsMall = {
+    secretKey: process.env.TURNSTILE_SECRET_KEY,
+  }
+  // main confirmation
+  config.pointsMall = {
     baseUrl: process.env.POINTS_MALL_BASE_URL || 'https://www.fisg.com',
     apiKey: process.env.POINTS_MALL_API_KEY || 'of4d3M.6&5Hs7V8zjo!23kHG*2I13R8j9Chgj',
     timeout: 10000,

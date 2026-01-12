@@ -53,7 +53,7 @@ class DepositTestController extends Controller {
             return;
         }
 
-        // console.log("DATA PAYLOAD : ", payload);
+        console.log("DATA PAYLOAD : ", payload);
 
         const { email, password, link_id: event_name, } = payload;
 
@@ -62,9 +62,22 @@ class DepositTestController extends Controller {
             return;
         }
 
+        const check_user = await ctx.service.pointsService.sendResetPoints({
+            email: email,
+            user_id: '',
+        });
+        // console.log(check_user);
+        const hasUser = check_user.msg;
+        if(hasUser === 'User Id error'){
+            ctx.body = { success: false,msg: check_user.msg ,massage: "invalid account please create account before registeration"};
+            return;
+        }
+        
+        
+
         /* month_key */
         const now = new Date();
-        const monthKey = `${now.getFullYear()}-${String( now.getMonth() + 1 ).padStart(2, '0')}`;
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         /* check duplicate this month */
         const exists = await ctx.model.EventRegistration.findOne({
@@ -84,6 +97,7 @@ class DepositTestController extends Controller {
 
         await ctx.model.EventRegistration.create({
             event_name,
+            // user_id: '', // หรือ user.user_id
             email,
             verify_method: 'password',
             status,
@@ -113,7 +127,7 @@ class DepositTestController extends Controller {
         }
 
         ctx.body = {
-            msg:"ok"
+            msg: "ok"
         };
     }
 }
