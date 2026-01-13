@@ -19,10 +19,6 @@ module.exports = appInfo => {
     database: process.env.DB_NAME || '',
     username: process.env.DB_USER || '',
     password: process.env.DB_PASSWORD || '',
-    timezone: '+00:00',
-    dialectOptions: {
-      socketPath: '/tmp/mysql.sock',
-    },
     logging: false,
   };
 
