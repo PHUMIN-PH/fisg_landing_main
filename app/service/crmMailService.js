@@ -12,16 +12,16 @@ class CrmMailService extends Service {
     // 2. api2_key 
     const api2Key = app.config.crm.api2Key;
 
-    // 3. build source (ต้องเรียง key)
+    // 3. (ต้องเรียง key จากตัวอักษร)
     const source = `code=${code}&email=${email}`;
 
-    // 4. generate sign (md5)
+    // 4. sign (md5)
     const sign = crypto
       .createHash('md5')
       .update(`${source}&${unix}&${api2Key}`)
       .digest('hex');
 
-    // 5. call CRM API
+    // 5. call CRM API Andy
     const res = await ctx.curl(
       'https://sgapi.isgfin.com/crm/api/send/mail',
       {
