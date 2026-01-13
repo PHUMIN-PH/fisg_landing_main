@@ -31,8 +31,8 @@ module.exports = appInfo => {
       const allowList = [
         'http://127.0.0.1:7001',
         'http://localhost:7001',
-        'http://127.0.0.1:5500',   // ถ้าเปิด html ด้วย live server
-        'http://localhost:5500',
+        'http://127.0.0.1:4200',
+        'http://localhost:4200',
         'https://www.fisg.com/', // prod
       ];
 
@@ -69,7 +69,7 @@ module.exports = appInfo => {
   config.security = {
     csrf: {
       ignore: ctx => {
-        return ctx.path.startsWith('/api/register/');
+        return ctx.path.startsWith('/api/');
       },
     },
   };

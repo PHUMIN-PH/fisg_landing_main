@@ -6,7 +6,7 @@ class AuthController extends Controller {
     const { ctx } = this;
     const { email } = ctx.request.body;
 
-    // register user logic ของคุณตรงนี้...
+    // register user logic 
 
     // ส่ง confirmation mail
     const result = await ctx.service.crmMail.sendConfirmationEmail({

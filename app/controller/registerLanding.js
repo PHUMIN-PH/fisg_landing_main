@@ -5,7 +5,7 @@ const forge = require('node-forge');
 const log = require('node-forge/lib/log');
 
 
-class DepositTestController extends Controller {
+class LandingRegisterController extends Controller {
     async index() {
         const { ctx } = this;
         const PRIVATE_KEY = ctx.app.config.rsaPrivateKey;
@@ -73,8 +73,6 @@ class DepositTestController extends Controller {
             return;
         }
         
-        
-
         /* month_key */
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -132,4 +130,4 @@ class DepositTestController extends Controller {
     }
 }
 
-module.exports = DepositTestController;
+module.exports = LandingRegisterController;
