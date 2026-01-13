@@ -1747,7 +1747,7 @@
           encrypt.setPublicKey(atob(key));
           const encryptedKey = encrypt.encrypt(aesKey);
 
-          fetch("http://127.0.0.1:7001/api/register/", {
+          fetch("https://tbapi.itsfin.com/api/register/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
