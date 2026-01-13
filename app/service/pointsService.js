@@ -25,8 +25,8 @@ class CrmPointService extends Service {
     const isMallCrmKey = app.config.crm.apiPointsKey;
 
     const source = `crm_user_id=${user_id}&email=${email}&end_time=${endTime}&start_time=${startTime}`;
-    console.log("SOURCE : ", source);
-    console.log("KEY : ", isMallCrmKey);
+    // console.log("SOURCE : ", source);
+    // console.log("KEY : ", isMallCrmKey);
 
 
     //sign (md5)
@@ -35,12 +35,12 @@ class CrmPointService extends Service {
       .update(`${source}&${unix}&${isMallCrmKey}`)
       .digest('hex');
 
-    console.log("SIGN IS : ", sign);
-    console.log("UNIX IS : ", unix);
+    // console.log("SIGN IS : ", sign);
+    // console.log("UNIX IS : ", unix);
 
     const url = 'https://pma.isgfin.com/crm/points/activity?' + "crm_user_id=" + user_id + "&email=" + email + "&start_time=" + startTime + "&end_time=" + endTime;
     //call CRM API
-    console.log("URL IS : ", url);
+    // console.log("URL IS : ", url);
 
     const res = await ctx.curl(url,
       {
@@ -96,19 +96,14 @@ class CrmPointService extends Service {
       .update(`${signSource}&${unix}&${isMallCrmKey}`)
       .digest('hex');
 
-    const source = `email=${email}&end_time=${endTime}&operator=${email}&start_time=${startTime}`;
-    console.log("SOURCE : ", source);
-    console.log("KEY : ", isMallCrmKey);
-
-
+    // const source = `email=${email}&end_time=${endTime}&operator=${email}&start_time=${startTime}`;
+    // console.log("SOURCE : ", source);
+    // console.log("KEY : ", isMallCrmKey);
     //sign (md5)
     // const sign = crypto
     //   .createHash('md5')
     //   .update(`${source}&${unix}&${isMallCrmKey}`)
     //   .digest('hex');
-
-    console.log("SIGN IS : ", sign);
-    console.log("UNIX IS : ", unix);
 
     // const body = {
     //   email: email || "",
@@ -126,6 +121,54 @@ class CrmPointService extends Service {
         Accept: 'application/json',
       },
       data: body,
+      dataType: 'json',
+      timeout: 5000,
+    });
+
+    return res.data;
+  }
+
+  async redeemCheck({ email, user_id }) {
+    const { ctx, app } = this;
+
+    const unix = Date.now();
+    const present = new Date();
+
+    const startDate = new Date(present.getFullYear(), present.getMonth(), 1);
+    const formatDate = d => d.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    const startTime = formatDate(startDate);
+    const endTime = formatDate(present);
+
+    const isMallCrmKey = app.config.crm.apiPointsKey;
+
+    const body = {
+      crm_user_id: user_id,
+      email: email,
+      start_time: startTime,
+      end_time: endTime,
+    };
+
+    const signSource = Object.keys(body)
+      .sort()
+      .map(k => `${k}=${body[k]}`)
+      .join('&');
+
+    const sign = crypto
+      .createHash('md5')
+      .update(`${signSource}&${unix}&${isMallCrmKey}`)
+      .digest('hex');
+
+    const url = 'https://pma.isgfin.com/crm/points/active?' + "crm_user_id=" + user_id + "&email=" + email + "&start_time=" + startTime + "&end_time=" + endTime;
+
+    const res = await ctx.curl(url, {
+      method: 'GET',
+      headers: {
+        unix,
+        sign,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
       dataType: 'json',
       timeout: 5000,
     });

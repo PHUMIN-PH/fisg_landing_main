@@ -52,6 +52,11 @@ module.exports = app => {
         allowNull: false,
       },
 
+      points: {
+        type: STRING(36), 
+        allowNull: true,
+      },
+
       created_at: {
         type: DATE,
         allowNull: false,

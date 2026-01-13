@@ -17,3 +17,4 @@ typings/
 private.pem
 public.pem
 private_pkcs8.pem
+app/config/

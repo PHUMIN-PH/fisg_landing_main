@@ -9,6 +9,6 @@ module.exports = app => {
 
   // router.post('/api/register/deposit-and-trade-to-win', controller.depositAndTradeToWin.index);
   router.post('/api/register/', controller.registerLanding.index);
-  
+
 };
 
