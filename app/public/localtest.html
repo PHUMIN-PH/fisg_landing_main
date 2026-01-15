@@ -1557,7 +1557,6 @@
                                 </div>
                                 <div class="dtw-form-action">
                                     <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div>
-                                    <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAACL_eUmwJ4OWjTsc"></div> -->
                                     <button type="submit" class="font-size-6" id="submitBtn">Tôi đồng ý và gửi</button>
                                 </div>
                                        <div class="dtw-form-note">
@@ -1749,7 +1748,6 @@
           const encryptedKey = encrypt.encrypt(aesKey);
 
           fetch("http://127.0.0.1:7001/api/register/", {
-            // fetch("https://tbapi.itsfin.com/api/register/", 
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1801,6 +1799,21 @@
               if (msgLower.includes("redeem")) {
                 showError(
                   "Bạn đã thực hiện đổi thưởng điểm trong tháng này, vì vậy không thể tham gia hoạt động này. Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ với quản lý tài khoản của bạn."
+                );
+                return;
+              }
+
+              if (msgLower.includes("overlapping reset records found")) {
+                showError(
+                    "Người dùng đã có các bản ghi đặt lại điểm trong các khoảng thời gian trùng lặp. Sử dụng isForceReset=1 để ghi đè. Cảnh báo: Việc đặt lại bắt buộc có thể làm điểm tích lũy của người dùng bị rối loạn, vui lòng cẩn trọng khi sử dụng."
+                );
+                return;
+              }
+              
+              // Alert for new customers who must register first (Vietnamese translation from the first image).
+              if (msgLower.includes("user id error")) {
+                showError(
+                  "Đối với khách hàng mới, vui lòng hoàn tất việc đăng ký và mở tài khoản trước. Sau đó, quá trình đăng ký sẽ được đồng bộ và hoàn tất."
                 );
                 return;
               }

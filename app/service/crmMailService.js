@@ -10,7 +10,7 @@ class CrmMailService extends Service {
     const unix = Date.now();
 
     // 2. api2_key 
-    const api2Key = app.config.crm.api2Key;
+    const api2Key = app.config.crm.apiMailKey;
 
     // 3. (ต้องเรียง key จากตัวอักษร)
     const source = `code=${code}&email=${email}`;

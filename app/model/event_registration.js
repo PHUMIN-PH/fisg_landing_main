@@ -57,6 +57,11 @@ module.exports = app => {
         allowNull: true,
       },
 
+      recalculated_total:{
+        type: STRING(36),
+        allowNull:true,
+      },
+
       created_at: {
         type: DATE,
         allowNull: false,

@@ -29,14 +29,15 @@ module.exports = appInfo => {
         'http://localhost:7001',
         'http://127.0.0.1:4200',
         'http://localhost:4200',
-        'https://www.fisg.com/', // prod
+        'https://www.fisg.com',
+        'https://fisg.com', // prod
       ];
 
       const origin = ctx.get('origin');
       if (allowList.includes(origin)) {
         return origin;
       }
-      return false; 
+      return ''; 
     },
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
     allowHeaders: 'Content-Type, Authorization',
@@ -46,6 +47,7 @@ module.exports = appInfo => {
 
   config.crm = {
     apiPointsKey: process.env.CRM_API_POINTMALL_KEY,
+    apiMailKey: process.env.CRM_MAIL_KEY,
   }
 
   config.multipart = {

@@ -3,6 +3,18 @@ const Service = require('egg').Service;
 const { log } = require('console');
 const crypto = require('crypto');
 
+// This is mini document for this api
+// 1. sendCheckPoints is 'function use for check the right user'
+//         endPoints: /points/activity?
+//         total_points is คะแนนรวมจะเปลี่ยนแปลงไปตามช่วงเวลา (ค่าบวกหมายถึงได้รับ ค่าลบหมายถึงใช้ไป)
+// 2. sendResetPoints is 'function use for send reset points when registered'
+//         endPoints: /points/reset?
+//         range_points is คะแนนรวมเปลี่ยนแปลงในช่วงเวลาที่กำหนด (ค่าที่ใช้ในการหักล้าง)
+//         recalculated_total is คะแนนรวมของผู้ใช้หลังจากรีเซ็ต
+//       การเก็บ
+//         - range_points and recalculated_total
+
+
 class CrmPointService extends Service {
   async sendCheckPoints({ email, user_id }) {
     const { ctx, app } = this;
@@ -25,9 +37,6 @@ class CrmPointService extends Service {
     const isMallCrmKey = app.config.crm.apiPointsKey;
 
     const source = `crm_user_id=${user_id}&email=${email}&end_time=${endTime}&start_time=${startTime}`;
-    // console.log("SOURCE : ", source);
-    // console.log("KEY : ", isMallCrmKey);
-
 
     //sign (md5)
     const sign = crypto
@@ -83,9 +92,6 @@ class CrmPointService extends Service {
       operator: email,
     };
 
-    // const unix = 1768215556108;
-    // const apiKey = 'of4d3M.6&5Hs7V8zjo!23kHG*2I13R8j9Chgj';
-
     const signSource = Object.keys(body)
       .sort()
       .map(k => `${k}=${body[k]}`)
@@ -139,27 +145,32 @@ class CrmPointService extends Service {
 
     const startTime = formatDate(startDate);
     const endTime = formatDate(present);
+    // const startTime = '2026-01-01';
+    // const endTime = '2026-01-10'
 
     const isMallCrmKey = app.config.crm.apiPointsKey;
 
-    const body = {
-      crm_user_id: user_id,
-      email: email,
-      start_time: startTime,
-      end_time: endTime,
-    };
+    // const body = {
+    //   crm_user_id: user_id,
+    //   email: email,
+    //   start_time: startTime,
+    //   end_time: endTime,
+    // };
+    
+    // const signSource = Object.keys(body)
+    //   .sort()
+    //   .map(k => `${k}=${body[k]}`)
+    //   .join('&');
 
-    const signSource = Object.keys(body)
-      .sort()
-      .map(k => `${k}=${body[k]}`)
-      .join('&');
+    const source = `crm_user_id=${user_id}&email=${email}&end_time=${endTime}&start_time=${startTime}`;
+    // console.log(source);
 
     const sign = crypto
       .createHash('md5')
-      .update(`${signSource}&${unix}&${isMallCrmKey}`)
+      .update(`${source}&${unix}&${isMallCrmKey}`)
       .digest('hex');
 
-    const url = 'https://pma.isgfin.com/crm/points/active?' + "crm_user_id=" + user_id + "&email=" + email + "&start_time=" + startTime + "&end_time=" + endTime;
+    const url = 'https://pma.isgfin.com/crm/orders/active?' + "crm_user_id=" + user_id + "&email=" + email + "&start_time=" + startTime + "&end_time=" + endTime;
 
     const res = await ctx.curl(url, {
       method: 'GET',
@@ -174,6 +185,21 @@ class CrmPointService extends Service {
     });
 
     return res.data;
+  }
+
+  async createOverlapping({ email, ipAddress, status, solveBy }) {
+    const { ctx } = this;
+
+    const record = await ctx.model.Overlapping.create({
+      email,
+      ip_address: ipAddress || ctx.ip,
+      status: status || 'PENDING',
+      solve_by: solveBy || 'system',
+      created_at: new Date(),
+      modify_datetime: null,
+    });
+
+    return record;
   }
 }
 

@@ -10,7 +10,7 @@ class LandingRegisterController extends Controller {
         const { ctx } = this;
         const now = new Date();
 
-        ctx.logger.info('RSA key loaded:', Boolean(ctx.app.config.rsaPrivateKey));
+        // ctx.logger.info('RSA key loaded:', Boolean(ctx.app.config.rsaPrivateKey));
 
         const { data, key, 'cf-turnstile-response': token, } = ctx.request.body;
 
@@ -21,7 +21,7 @@ class LandingRegisterController extends Controller {
             return;
         }
 
-        /* verify    Turnstile  */
+        /* verify    Turnstile before stater  */
         const cf_verify = await ctx.service.cfTurnstile.verify(token);
         if (!cf_verify) {
             ctx.status = 401;
@@ -82,7 +82,18 @@ class LandingRegisterController extends Controller {
             email: email,
             user_id: '',
         });
-        const hasRedeemThisMonth = check_redeem.order_status;
+        // const hasRedeemThisMonth = check_redeem.order_status;
+
+        const orders = check_redeem;
+        console.log(check_redeem);
+
+        const hasRedeemThisMonth = orders.some(o => {
+            if (o.order_status !== 1 || !o.order_payment_time) return false;
+
+            const d = new Date(o.order_payment_time.replace(' ', 'T'));
+            return d.getFullYear() === now.getFullYear() &&
+                d.getMonth() === now.getMonth();
+        });
 
         if (hasRedeemThisMonth === 1) {
             ctx.status = 403;
@@ -93,11 +104,18 @@ class LandingRegisterController extends Controller {
             return;
         }
 
+        await ctx.model.Overlapping.create({
+            email,
+            ip_address: ctx.ip,
+            status: 'OVERLAPPING',
+            created_at: new Date(),
+        });
+
         /* month_key */
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-        /* check duplicate this month */
-        const usersAuth = await ctx.model.EventRegistration.findOne({
+        /* check duplicate user registerd this month */
+        const userRegistered = await ctx.model.EventRegistration.findOne({
             where: {
                 email,
                 month_key: monthKey,
@@ -107,8 +125,9 @@ class LandingRegisterController extends Controller {
         let status = 'success';
         let failReason = null;
         let resetPoints = null;
+        let recalculated_total = null;
 
-        if (usersAuth) {
+        if (userRegistered) {
             status = 'failed';
             failReason = 'ALREADY_REGISTERED_THIS_MONTH';
         }
@@ -119,9 +138,11 @@ class LandingRegisterController extends Controller {
                 email: email,
                 user_id: '',
             });
+            console.log(dataResetPoints);
 
             if (dataResetPoints.msg === 'success') {
                 resetPoints = dataResetPoints.range_points;
+                recalculated_total = dataResetPoints.recalculated_total;
                 await ctx.model.EventRegistration.create({
                     event_name,
                     // user_id: '', 
@@ -132,6 +153,7 @@ class LandingRegisterController extends Controller {
                     registered_date: now,
                     month_key: monthKey,
                     points: resetPoints,
+                    recalculated_total: recalculated_total,
                     created_at: now,
                 });
 
@@ -139,32 +161,40 @@ class LandingRegisterController extends Controller {
                     email,
                     code: event_name,
                 });
+                console.log("send email completed");
+
             } else {
+
+                await ctx.model.Overlapping.create({
+                    email,
+                    ip_address: ipAddress || ctx.ip,
+                    status: 'OVERLAPPING',
+                    created_at: new Date(),
+                });
 
                 ctx.body = {
                     msg: 'Overlapping reset records found',
-                    massage : 'User has existing reset records for overlapping time periods. Use isForceReset=1 to override. Forced resetting may cause user points to become disordered, please use with caution.',
+                    massage: 'User has existing reset records for overlapping time periods.  Forced resetting may cause user points to become disordered, please use with caution.',
                     token,
+                    dataResetPoints
                 };
                 return;
             }
 
-        }else{
+        } else {
             await ctx.model.EventRegistration.create({
-                    event_name,
-                    // user_id: '', 
-                    email,
-                    verify_method: 'password',
-                    status,
-                    fail_reason: failReason,
-                    registered_date: now,
-                    month_key: monthKey,
-                    points: resetPoints,
-                    created_at: now,
-                });
-        }
+                event_name,
+                // user_id: '', 
+                email,
+                verify_method: 'password',
+                status,
+                fail_reason: failReason,
+                registered_date: now,
+                month_key: monthKey,
+                points: resetPoints,
+                created_at: now,
+            });
 
-        if (status === 'failed') {
             ctx.status = 409;
             ctx.body = {
                 status: 'DUPLICATE_REGISTERED',

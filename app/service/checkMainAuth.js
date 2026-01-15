@@ -3,9 +3,8 @@ const Service = require('egg').Service;
 
 class MainAuthService extends Service {
   async verifyUser({ email, password }) {
-    // เรียก API ระบบ login หลัก
     const res = await this.ctx.curl(
-      'https://main-auth.yourcompany.com/api/login/check',
+      'api/auth/login',
       {
         method: 'POST',
         contentType: 'json',
