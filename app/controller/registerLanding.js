@@ -104,12 +104,12 @@ class LandingRegisterController extends Controller {
             return;
         }
 
-        await ctx.model.Overlapping.create({
-            email,
-            ip_address: ctx.ip,
-            status: 'OVERLAPPING',
-            created_at: new Date(),
-        });
+        // await ctx.model.Overlapping.create({
+        //     email,
+        //     ip_address: ctx.ip,
+        //     status: 'OVERLAPPING',
+        //     created_at: new Date(),
+        // });
 
         /* month_key */
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
