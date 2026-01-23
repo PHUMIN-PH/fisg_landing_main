@@ -92,7 +92,7 @@ class WebinarController extends Controller {
 
         const exists = await ctx.model.WebinarRegister.findOne({
             where: {
-                unique,
+                unique_code: unique,
                 email,
                 timezone,
             },
