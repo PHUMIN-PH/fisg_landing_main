@@ -1486,8 +1486,8 @@
                                 </div>
                         
                                 <div class="fwn-reserve-form-action">
-                                    <!-- <div class="cf-turnstile" data-sitekey="0x4AAAAAABnCJ2diMumq6zZR"></div> -->
-                                    <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div>
+                                    <div class="cf-turnstile" data-sitekey="0x4AAAAAABnCJ2diMumq6zZR"></div>
+                                    <!-- <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA"></div> -->
                                     <button type="submit" id="submitBtn">
                                         ลงทะเบียนสำรองที่นั่ง
                                     </button>
@@ -1864,7 +1864,7 @@
             submitBtn.innerText = "Submitting...";
           }
 
-          fetch("http://127.0.0.1:7001/api/register/webinar/", {
+          fetch("https://tbapi.itsfin.com/api/register/webinar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

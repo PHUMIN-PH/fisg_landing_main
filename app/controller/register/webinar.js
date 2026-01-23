@@ -54,15 +54,6 @@ class WebinarController extends Controller {
             return;
         }
 
-        const today = new Date().toISOString().slice(0, 10);
-        const UTC0 = new Date().toISOString().split('T')[0];
-        // const endDate = splitEndDateTimeUTC('2026-01-30T20:00:00+07:00');
-
-        // console.log("DATA PAYLOAD : ", payload);
-        // console.log("UTC: ", endDate);
-        // console.log(today);
-        // console.log(UTC0);
-
         const { email, name, link_id, unique, country, phone, periodtime, timezone } = payload;
 
         const webinarPeriod = await ctx.model.Webinar.findOne({
@@ -77,9 +68,9 @@ class WebinarController extends Controller {
             return;
         }
 
-        console.log(webinarPeriod.end_date);
-        console.log(webinarPeriod.name);
-        console.log(timezone);
+        // console.log(webinarPeriod.end_date);
+        // console.log(webinarPeriod.name);
+        // console.log(timezone);
         if(webinarPeriod.end_date !== timezone){
             ctx.status = 400;
             ctx.body = { msg: 'Mistake. Please Do not hard code! '+ctx.ip+'' };
@@ -88,8 +79,8 @@ class WebinarController extends Controller {
 
         const registrationEndTime = splitEndDateTimeUTC(timezone);
         const nowTime = nowUTCDateTime();
-        console.log("Current Time : ", nowTime);
-        console.log("EndDateTime : ", registrationEndTime);
+        // console.log("Current Time : ", nowTime);
+        // console.log("EndDateTime : ", registrationEndTime);
 
         if (nowTime > registrationEndTime) {
             ctx.body = {
@@ -119,6 +110,10 @@ class WebinarController extends Controller {
                 unique_code: unique,
                 periodtime,
                 timezone,
+                timestamp,
+                language,
+                signature,
+                phonecode,
                 name,
                 phone,
                 email,
