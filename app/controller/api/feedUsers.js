@@ -6,6 +6,9 @@ class FeedUsersDataController extends Controller {
     const { ctx } = this;
 
     /* ---------- query params ---------- */
+    // app/controller/api/authAdmin.js
+console.log('🔥 feedUser controller loaded');
+
     const {
       event_name,
       email,

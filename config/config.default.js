@@ -44,7 +44,6 @@ module.exports = appInfo => {
     credentials: false, 
   };
 
-
   config.crm = {
     apiPointsKey: process.env.CRM_API_POINTMALL_KEY,
     apiMailKey: process.env.CRM_MAIL_KEY,
@@ -71,6 +70,7 @@ module.exports = appInfo => {
       },
     },
   };
+  
 
   config.internalApiKey = process.env.INTERNAL_API_KEY;
   config.internalApiSecret = process.env.INTERNAL_API_SECRET;
@@ -85,6 +85,15 @@ module.exports = appInfo => {
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1767929013003_7428';
+
+  config.session = {
+  key: 'FISG_ADMIN_SESS',
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  httpOnly: true,
+  encrypt: true,
+  // signed: true,
+  // secure: true,
+};
 
   // add your middleware config here
   config.middleware = [];
