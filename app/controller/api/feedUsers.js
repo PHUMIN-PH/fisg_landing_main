@@ -4,10 +4,10 @@ const { Controller } = require('egg');
 class FeedUsersDataController extends Controller {
   async getData() {
     const { ctx } = this;
-
-    /* ---------- query params ---------- */
-    // app/controller/api/authAdmin.js
-console.log('🔥 feedUser controller loaded');
+    
+    if (!ctx.session.admin) {
+            ctx.throw(401);
+        }
 
     const {
       event_name,

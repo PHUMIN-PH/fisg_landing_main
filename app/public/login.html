@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #fff;
+      padding: 24px;
+      width: 320px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    h2 {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #1677ff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #999;
+    }
+    .result {
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Admin Login</h2>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="admin@email.com"
+      required
+    />
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      required
+    />
+
+    <button id="loginBtn">Login</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+const btn = document.getElementById('loginBtn');
+const result = document.getElementById('result');
+
+function countryChange() {
+        const select = document.getElementById("country");
+        if (!select) return;
+        const selectedOption = select.options[select.selectedIndex];
+        const code = selectedOption ? selectedOption.getAttribute("code") : "";
+        const language = selectedOption
+          ? selectedOption.getAttribute("lang")
+          : "";
+        document.getElementById("phoneCode").value = code || "";
+        document.getElementById("language").value = language || "en";
+      }
+
+btn.addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if (!email || !password) {
+    result.innerText = 'Please fill email and password';
+    return;
+  }
+
+  btn.disabled = true;
+  result.innerText = 'Signing in...';
+
+  try {
+    const res = await fetch('/api/v1/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (_) {}
+
+    /* ===== handle by STATUS CODE ===== */
+    if (res.status === 200) {
+      result.innerText = '✅ Login success';
+      // redirect ได้ตรงนี้
+      // location.href = '/admin/dashboard.html';
+      return;
+    }
+
+    if (res.status === 400) {
+      result.innerText = '❌ Email / Password required';
+      return;
+    }
+
+    if (res.status === 401) {
+      result.innerText = '❌ Invalid email or password';
+      return;
+    }
+
+    if (res.status === 403) {
+      result.innerText = '❌ Account disabled';
+      return;
+    }
+
+    if (res.status === 500) {
+      result.innerText = '❌ Server error';
+      return;
+    }
+
+    // fallback
+    result.innerText = `❌ Error (${res.status})`;
+
+  } catch (err) {
+    result.innerText = '❌ Network error';
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+
+
+</body>
+</html>

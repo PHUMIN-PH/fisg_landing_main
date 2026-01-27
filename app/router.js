@@ -8,8 +8,11 @@ module.exports = app => {
   router.get('/', controller.home.index);
   router.get('/api/v1/fuser' , controller.api.feedUsers.getData);
 
-  router.post('api/admin/v1/signin', controller.api.authAdmin.signin);
-  router.post('api/admin/v1/logout', controller.api.authAdmin.logout);
+  router.post('/api/v1/signin', controller.api.authAdmin.signin);
+  router.post('/api/v1/signup', controller.api.authAdmin.signup);
+  router.post('/api/v1/logout', controller.api.authAdmin.logout);
+  router.get('/api/v1/logout', controller.api.authAdmin.logout);
+  router.get('/api/v1/me', controller.api.authAdmin.me);
 
   // router.post('/api/register/deposit-and-trade-to-win', controller.depositAndTradeToWin.index);
   router.post('/api/register/', controller.registerLanding.index);

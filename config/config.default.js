@@ -27,21 +27,20 @@ module.exports = appInfo => {
       const allowList = [
         'http://127.0.0.1:7001',
         'http://localhost:7001',
-        'http://127.0.0.1:4200',
-        'http://localhost:4200',
         'https://www.fisg.com',
-        'https://fisg.com', // prod
+        'https://fisg.com',// prod
+        'https://event-system-ochre.vercel.app',
       ];
 
       const origin = ctx.get('origin');
       if (allowList.includes(origin)) {
         return origin;
       }
-      return ''; 
+      return '';
     },
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
     allowHeaders: 'Content-Type, Authorization',
-    credentials: false, 
+    credentials: true,
   };
 
   config.crm = {
@@ -70,7 +69,7 @@ module.exports = appInfo => {
       },
     },
   };
-  
+
 
   config.internalApiKey = process.env.INTERNAL_API_KEY;
   config.internalApiSecret = process.env.INTERNAL_API_SECRET;
@@ -87,16 +86,29 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1767929013003_7428';
 
   config.session = {
-  key: 'FISG_ADMIN_SESS',
-  maxAge: 24 * 60 * 60 * 1000, // 1 day
-  httpOnly: true,
-  encrypt: true,
-  // signed: true,
-  // secure: true,
-};
+    key: 'FISG_ADMIN_SESSION',
+    maxAge: 8 * 60 * 60 * 1000, // 1 day
+    httpOnly: true,
+    encrypt: true,
+    sameSite: 'none',
+    // signed: true,
+    // secure: true,  // https
+  };
+
+  // config.onerror = {
+  //   all(err, ctx) {
+  //     ctx.status = err.status || 500;
+  //     ctx.body = {
+  //       success: false,
+  //       message: err.status === 401 ? 'Unauthorized' : 'Server Error',
+  //     };
+  //   },
+  // };
 
   // add your middleware config here
-  config.middleware = [];
+  // config.middleware = [];
+  config.middleware = ['errorHandler'];
+
 
   // add your user config here
   const userConfig = {
