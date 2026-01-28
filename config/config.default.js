@@ -94,7 +94,7 @@ module.exports = appInfo => {
     httpOnly: true,
     encrypt: true,
     sameSite: 'none',
-    signed: true,
+    // signed: true,
     secure: true,  // https
   };
 
