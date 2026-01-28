@@ -14,8 +14,8 @@ class FeedUsersDataController extends Controller {
       email,
       status,
       month_key,
-      page = Number(ctx.query.page || 1),
-      pageSize = Number(ctx.query.page_size || 20),
+      page = 1,
+      page_size = 20,
     } = ctx.query;
 
     const limit = Math.min(Number(page_size) || 20, 100);
@@ -30,9 +30,8 @@ class FeedUsersDataController extends Controller {
     if (month_key) where.month_key = month_key;
 
     /* ---------- query db WebinarRegister---------- */
-    // const { rows, count } = await ctx.model.EventRegistration.findAndCountAll({
-
-    const { count, rows } = await ctx.model.WebinarRegister.findAndCountAll({
+    const { rows, count } = await ctx.model.WebinarRegister.findAndCountAll({
+      where,
       attributes: [
         'type',
         'link_id',
@@ -44,24 +43,22 @@ class FeedUsersDataController extends Controller {
         'country',
         'created_at',
       ],
-      where: {
-        ...(ctx.query.link_id ? { link_id: ctx.query.link_id } : {}),
-      },
       order: [['created_at', 'DESC']],
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
+      limit,
+      offset,
     });
 
+    /* ---------- response ---------- */
     ctx.body = {
       success: true,
       data: rows,
       pagination: {
         total: count,
-        page,
-        page_size: pageSize,
+        page: Number(page),
+        page_size: limit,
+        total_pages: Math.ceil(count / limit),
       },
     };
-
   }
 }
 
