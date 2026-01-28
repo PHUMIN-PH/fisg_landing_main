@@ -19,6 +19,7 @@ module.exports = appInfo => {
     database: process.env.DB_NAME || '',
     username: process.env.DB_USER || '',
     password: process.env.DB_PASSWORD || '',
+    
     logging: false,
   };
 
@@ -30,6 +31,7 @@ module.exports = appInfo => {
         'https://www.fisg.com',
         'https://fisg.com',// prod
         'https://event-system-ochre.vercel.app',
+        'http://localhost:4200'
       ];
 
       const origin = ctx.get('origin');
@@ -91,8 +93,8 @@ module.exports = appInfo => {
     httpOnly: true,
     encrypt: true,
     sameSite: 'none',
-    // signed: true,
-    // secure: true,  // https
+    signed: true,
+    secure: true,  // https
   };
 
   // config.onerror = {
