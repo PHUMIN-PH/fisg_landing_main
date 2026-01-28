@@ -96,11 +96,8 @@
           หน้านี้ต้องมี session admin ก่อน ถึงจะดึงข้อมูลผู้สมัครได้
         </div>
         <div class="row">
-          <a class="btn primary" href="/api/admin/login" id="loginLink">ไปหน้า Login</a>
+          <a class="btn primary" href="/public/login.html" id="loginLink">ไปหน้า Login</a>
           <button class="btn" id="btnRecheck">ตรวจ session อีกครั้ง</button>
-        </div>
-        <div class="muted" style="margin-top:10px; font-size:12px;">
-          * ถ้าคุณไม่มีหน้า /api/admin/login ให้แก้ลิงก์ปุ่มนี้เป็น URL ของหน้า login ที่มีจริง
         </div>
       </div>
 
@@ -142,8 +139,8 @@
 
 <script>
   // ====== CONFIG ======
-  const API_ME = "/api/admin/v1/me";          // ปรับได้ตามที่คุณทำจริง
-  const API_LOGOUT = "/api/admin/v1/logout"; // ปรับได้ตามที่คุณทำจริง
+  const API_ME = "/api/v1/me";          // ปรับได้ตามที่คุณทำจริง
+  const API_LOGOUT = "/api/v1/logout"; // ปรับได้ตามที่คุณทำจริง
   const API_FUSER = "/api/v1/fuser";         // คุณใช้อยู่แล้ว
 
   // ====== STATE ======
