@@ -31,6 +31,7 @@ module.exports = appInfo => {
         'https://www.fisg.com',
         'https://fisg.com',// prod
         'https://event-system-ochre.vercel.app',
+        'https://event-system-ochre.vercel.app/',
         'http://localhost:4200'
       ];
 
