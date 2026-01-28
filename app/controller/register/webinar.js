@@ -64,6 +64,9 @@ class WebinarController extends Controller {
             },
         });
 
+        console.log(payload);
+        
+
         if (!webinarPeriod || !webinarPeriod.end_date) {
             ctx.status = 400;
             ctx.body = { msg: 'WEBINAR_NOT_FOUND' };
