@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FISG - Webinar Users</title>
+  <style>
+    :root { --bg:#0b1020; --card:#121a33; --muted:#9aa7c7; --text:#eaf0ff; --border: rgba(255,255,255,.12); }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(1200px 600px at 20% -10%, #1a2a66 0%, transparent 60%), var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .top { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom: 14px; }
+    .brand { display:flex; gap:10px; align-items:center; }
+    .dot { width:10px; height:10px; border-radius:999px; background:#4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,.15); }
+    .title { font-size: 18px; font-weight: 700; }
+    .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .card { background: rgba(18,26,51,.92); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); background: rgba(255,255,255,.06); color: var(--text); padding: 8px 10px; border-radius: 999px; font-size: 12px; }
+    .pill input { border:none; outline:none; background:transparent; color: var(--text); width: 220px; font-size: 12px; }
+    .btn { cursor:pointer; border:1px solid var(--border); background: rgba(255,255,255,.08); color: var(--text); padding: 10px 12px; border-radius: 12px; font-weight: 600; font-size: 13px; }
+    .btn:hover { background: rgba(255,255,255,.14); }
+    .btn.primary { background: rgba(79,70,229,.35); border-color: rgba(79,70,229,.65); }
+    .btn.primary:hover { background: rgba(79,70,229,.48); }
+    .muted { color: var(--muted); }
+    .divider { height:1px; background: var(--border); margin: 12px 0; }
+    .status { font-size: 12px; color: var(--muted); }
+    .status b { color: var(--text); }
+    .badge { font-size:12px; padding: 3px 8px; border-radius: 999px; border:1px solid var(--border); background: rgba(255,255,255,.06); }
+    .error { color: #fecaca; background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.35); }
+    .ok { color:#bbf7d0; background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.35); }
+
+    /* Table */
+    .tableWrap { overflow:auto; border-radius: 14px; border: 1px solid var(--border); }
+    table { width: 100%; min-width: 820px; border-collapse: collapse; background: rgba(0,0,0,.12); }
+    thead th { text-align:left; font-size: 12px; color: var(--muted); padding: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; position: sticky; top: 0; background: rgba(10,16,32,.92); backdrop-filter: blur(8px); }
+    tbody td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 13px; white-space: nowrap; }
+    tbody tr:hover { background: rgba(255,255,255,.04); }
+
+    /* Mobile cards */
+    .cards { display:none; gap: 10px; flex-direction: column; }
+    .uCard { border:1px solid var(--border); background: rgba(255,255,255,.05); border-radius: 14px; padding: 12px; }
+    .uTop { display:flex; justify-content:space-between; align-items:flex-start; gap: 10px; }
+    .uName { font-weight: 800; font-size: 14px; }
+    .uMeta { display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .kv { border:1px dashed rgba(255,255,255,.12); border-radius: 12px; padding: 8px; }
+    .kv .k { font-size: 11px; color: var(--muted); }
+    .kv .v { font-size: 13px; margin-top: 4px; }
+
+    @media (max-width: 860px) {
+      table { min-width: 0; }
+      .tableWrap { display:none; }
+      .cards { display:flex; }
+      .pill input { width: 160px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">Webinar Users Viewer</div>
+          <div class="sub">ต้องมี session admin ถึงจะดูข้อมูลได้</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <span class="pill">
+          Link ID:
+          <input id="linkId" placeholder="live-trading-webinar" />
+        </span>
+        <button class="btn" id="btnReload">Reload</button>
+        <button class="btn primary" id="btnLogout" style="display:none;">Logout</button>
+      </div>
+    </div>
+
+    <div class="card" id="stateBox">
+      <div class="row" style="justify-content:space-between;">
+        <div class="status" id="statusText">Checking session...</div>
+        <div class="row" style="gap:8px;">
+          <span class="badge" id="badgeSession">SESSION: ...</span>
+          <span class="badge" id="badgeCount">COUNT: -</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Logged out view -->
+      <div id="loggedOut" style="display:none;">
+        <div style="font-weight:800; font-size:16px; margin-bottom:6px;">ยังไม่ได้เข้าสู่ระบบ</div>
+        <div class="muted" style="margin-bottom:12px;">
+          หน้านี้ต้องมี session admin ก่อน ถึงจะดึงข้อมูลผู้สมัครได้
+        </div>
+        <div class="row">
+          <a class="btn primary" href="/api/admin/login" id="loginLink">ไปหน้า Login</a>
+          <button class="btn" id="btnRecheck">ตรวจ session อีกครั้ง</button>
+        </div>
+        <div class="muted" style="margin-top:10px; font-size:12px;">
+          * ถ้าคุณไม่มีหน้า /api/admin/login ให้แก้ลิงก์ปุ่มนี้เป็น URL ของหน้า login ที่มีจริง
+        </div>
+      </div>
+
+      <!-- Logged in view -->
+      <div id="loggedIn" style="display:none;">
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>type</th>
+                <th>link_id</th>
+                <th>language</th>
+                <th>phonecode</th>
+                <th>name</th>
+                <th>phone</th>
+                <th>email</th>
+                <th>country</th>
+                <th>created_at</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="cards" id="cards"></div>
+
+        <div class="divider"></div>
+
+        <div class="row" style="justify-content:space-between;">
+          <div class="muted" id="pagingText">pagination: -</div>
+          <div class="row">
+            <button class="btn" id="btnPrev">Prev</button>
+            <button class="btn" id="btnNext">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ====== CONFIG ======
+  const API_ME = "/api/admin/v1/me";          // ปรับได้ตามที่คุณทำจริง
+  const API_LOGOUT = "/api/admin/v1/logout"; // ปรับได้ตามที่คุณทำจริง
+  const API_FUSER = "/api/v1/fuser";         // คุณใช้อยู่แล้ว
+
+  // ====== STATE ======
+  let page = 1;
+  let pageSize = 20;
+
+  const el = (id) => document.getElementById(id);
+  const qs = new URLSearchParams(location.search);
+
+  // prefill link_id from query string
+  el("linkId").value = qs.get("link_id") || "live-trading-webinar";
+
+  function setBadge(badgeEl, text, type) {
+    badgeEl.textContent = text;
+    badgeEl.className = "badge" + (type ? " " + type : "");
+  }
+
+  function showLoggedIn(on) {
+    el("loggedIn").style.display = on ? "block" : "none";
+    el("loggedOut").style.display = on ? "none" : "block";
+    el("btnLogout").style.display = on ? "inline-flex" : "none";
+  }
+
+  function setStatus(text) {
+    el("statusText").innerHTML = text;
+  }
+
+  async function checkSession() {
+    try {
+      setStatus("Checking session...");
+      setBadge(el("badgeSession"), "SESSION: ...");
+
+      const res = await fetch(API_ME, { credentials: "include" });
+      const json = await safeJson(res);
+
+      // สมมติ format: { success: true, admin: {...} } หรือ { success:false }
+      if (res.ok && json && json.success) {
+        setBadge(el("badgeSession"), "SESSION: OK", "ok");
+        showLoggedIn(true);
+        await loadUsers();
+      } else {
+        setBadge(el("badgeSession"), "SESSION: MISSING", "error");
+        showLoggedIn(false);
+        setStatus("Session ไม่พบ (ต้อง login ก่อน)");
+      }
+    } catch (e) {
+      setBadge(el("badgeSession"), "SESSION: ERROR", "error");
+      showLoggedIn(false);
+      setStatus("เช็ค session ไม่ได้: " + escapeHtml(String(e)));
+    }
+  }
+
+  async function loadUsers() {
+    const linkId = el("linkId").value.trim();
+    if (!linkId) {
+      setStatus("กรุณาใส่ link_id");
+      return;
+    }
+
+    // update URL without reload
+    const nqs = new URLSearchParams(location.search);
+    nqs.set("link_id", linkId);
+    history.replaceState(null, "", location.pathname + "?" + nqs.toString());
+
+    setStatus(`Loading users for <b>${escapeHtml(linkId)}</b> ...`);
+
+    const url = new URL(API_FUSER, location.origin);
+    url.searchParams.set("link_id", linkId);
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("page_size", String(pageSize));
+
+    const res = await fetch(url.toString(), { credentials: "include" });
+    const json = await safeJson(res);
+
+    if (!res.ok || !json || !json.success) {
+      setBadge(el("badgeCount"), "COUNT: -", "error");
+      setStatus(`โหลดข้อมูลไม่สำเร็จ (${res.status})`);
+      el("tbody").innerHTML = "";
+      el("cards").innerHTML = "";
+      el("pagingText").textContent = "pagination: -";
+      return;
+    }
+
+    const rows = Array.isArray(json.data) ? json.data : [];
+    const p = json.pagination || {};
+    setBadge(el("badgeCount"), "COUNT: " + (p.total ?? rows.length));
+
+    renderTable(rows);
+    renderCards(rows);
+
+    el("pagingText").textContent =
+      `pagination: total=${p.total ?? "-"} page=${p.page ?? page} page_size=${p.page_size ?? pageSize} total_pages=${p.total_pages ?? "-"}`;
+
+    setStatus(`Loaded <b>${rows.length}</b> records`);
+  }
+
+  function renderTable(rows) {
+    el("tbody").innerHTML = rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.type ?? "")}</td>
+        <td>${escapeHtml(r.link_id ?? "")}</td>
+        <td>${escapeHtml(r.language ?? "")}</td>
+        <td>${escapeHtml(r.phonecode ?? "")}</td>
+        <td>${escapeHtml(r.name ?? "")}</td>
+        <td>${escapeHtml(r.phone ?? "")}</td>
+        <td>${escapeHtml(r.email ?? "")}</td>
+        <td>${escapeHtml(r.country ?? "")}</td>
+        <td>${escapeHtml(r.created_at ?? "")}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderCards(rows) {
+    el("cards").innerHTML = rows.map(r => `
+      <div class="uCard">
+        <div class="uTop">
+          <div>
+            <div class="uName">${escapeHtml(r.name ?? "-")}</div>
+            <div class="muted" style="font-size:12px; margin-top:3px;">
+              ${escapeHtml(r.email ?? "-")}
+            </div>
+          </div>
+          <span class="badge">${escapeHtml(r.type ?? "-")}</span>
+        </div>
+
+        <div class="uMeta">
+          <div class="kv"><div class="k">link_id</div><div class="v">${escapeHtml(r.link_id ?? "-")}</div></div>
+          <div class="kv"><div class="k">language</div><div class="v">${escapeHtml(r.language ?? "-")}</div></div>
+          <div class="kv"><div class="k">phone</div><div class="v">${escapeHtml((r.phonecode ?? "") + (r.phone ?? ""))}</div></div>
+          <div class="kv"><div class="k">country</div><div class="v">${escapeHtml(r.country ?? "-")}</div></div>
+          <div class="kv" style="grid-column: 1 / -1;"><div class="k">created_at</div><div class="v">${escapeHtml(r.created_at ?? "-")}</div></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  async function logout() {
+    try {
+      const res = await fetch(API_LOGOUT, { method: "POST", credentials: "include" });
+      await safeJson(res);
+    } catch (_) {}
+    await checkSession();
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+  }
+
+  async function safeJson(res) {
+    try { return await res.json(); } catch { return null; }
+  }
+
+  // ====== EVENTS ======
+  el("btnReload").addEventListener("click", async () => {
+    page = 1;
+    await checkSession();
+  });
+
+  el("btnRecheck").addEventListener("click", checkSession);
+  el("btnLogout").addEventListener("click", logout);
+
+  el("btnPrev").addEventListener("click", async () => {
+    if (page > 1) page--;
+    await loadUsers();
+  });
+
+  el("btnNext").addEventListener("click", async () => {
+    page++;
+    await loadUsers();
+  });
+
+  // auto init
+  checkSession();
+</script>
+</body>
+</html>
