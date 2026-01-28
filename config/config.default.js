@@ -25,21 +25,45 @@ module.exports = appInfo => {
 
   config.cors = {
     origin: (ctx) => {
-      const allowList = [
-        'http://127.0.0.1:7001',
-        'http://localhost:7001',
-        'https://www.fisg.com',
-        'https://fisg.com',// prod
-        'https://event-system-ochre.vercel.app',
-        'http://localhost:4200'
-      ];
+    const origin = ctx.get('origin');
+    if (!origin) return false;
 
-      const origin = ctx.get('origin');
-      if (allowList.includes(origin)) {
-        return origin;
-      }
-      return '';
-    },
+    // allow vercel subdomain ทั้งหมด
+    if (origin.endsWith('.vercel.app')) {
+      return origin;
+    }
+
+    const allowList = [
+      'http://127.0.0.1:7001',
+      'http://localhost:7001',
+      'http://localhost:4200',
+      'https://fisg.com',
+      'https://www.fisg.com',
+      'https://event-system-ochre.vercel.app',
+    ];
+
+    if (allowList.includes(origin)) {
+      return origin;
+    }
+
+    return false;
+  },
+    // origin: (ctx) => {
+    //   const allowList = [
+    //     'http://127.0.0.1:7001',
+    //     'http://localhost:7001',
+    //     'https://www.fisg.com',
+    //     'https://fisg.com',// prod
+    //     'https://event-system-ochre.vercel.app',
+    //     'http://localhost:4200'
+    //   ];
+
+    //   const origin = ctx.get('origin');
+    //   if (allowList.includes(origin)) {
+    //     return origin;
+    //   }
+    //   return '';
+    // },
     allowMethods: 'GET,HEAD,PUT,POST,OPTIONS',
     // allowHeaders: 'Content-Type, Authorization',
     allowHeaders: [
