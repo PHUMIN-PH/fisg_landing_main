@@ -31,7 +31,6 @@ module.exports = appInfo => {
         'https://www.fisg.com',
         'https://fisg.com',// prod
         'https://event-system-ochre.vercel.app',
-        'https://event-system-ochre.vercel.app/',
         'http://localhost:4200'
       ];
 
@@ -41,8 +40,16 @@ module.exports = appInfo => {
       }
       return '';
     },
-    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-    allowHeaders: 'Content-Type, Authorization',
+    allowMethods: 'GET,HEAD,PUT,POST,OPTIONS',
+    // allowHeaders: 'Content-Type, Authorization',
+    allowHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Accept',
+    'X-Requested-With',
+    'X-CSRF-Token',
+    'X-XSRF-TOKEN',
+  ].join(','),
     credentials: true,
   };
 
