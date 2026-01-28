@@ -49,9 +49,18 @@ class FeedUsersDataController extends Controller {
     });
 
     /* ---------- response ---------- */
+    const data = rows.map(row => {
+      const r = row.toJSON();
+      return {
+        ...r,
+        created_at: formatDate(r.created_at),
+      };
+    });
+
+    // response
     ctx.body = {
       success: true,
-      data: rows,
+      data,
       pagination: {
         total: count,
         page: Number(page),
@@ -60,6 +69,21 @@ class FeedUsersDataController extends Controller {
       },
     };
   }
+
+}
+
+function formatDate(dt) {
+  if (!dt) return null;
+  const d = new Date(dt);
+
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
+
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 }
 
 module.exports = FeedUsersDataController;
