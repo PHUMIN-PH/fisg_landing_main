@@ -4,18 +4,18 @@ const { Controller } = require('egg');
 class FeedUsersDataController extends Controller {
   async getData() {
     const { ctx } = this;
-    
-    if (!ctx.session.admin) {
-            ctx.throw(401);
-        }
+
+    // if (!ctx.session.admin) {
+    //         ctx.throw(401);
+    //     }
 
     const {
       event_name,
       email,
       status,
       month_key,
-      page = 1,
-      page_size = 20,
+      page = Number(ctx.query.page || 1),
+      pageSize = Number(ctx.query.page_size || 20),
     } = ctx.query;
 
     const limit = Math.min(Number(page_size) || 20, 100);
@@ -29,25 +29,39 @@ class FeedUsersDataController extends Controller {
     if (status) where.status = status;
     if (month_key) where.month_key = month_key;
 
-    /* ---------- query db ---------- */
-    const { rows, count } = await ctx.model.EventRegistration.findAndCountAll({
-      where,
+    /* ---------- query db WebinarRegister---------- */
+    // const { rows, count } = await ctx.model.EventRegistration.findAndCountAll({
+
+    const { count, rows } = await ctx.model.WebinarRegister.findAndCountAll({
+      attributes: [
+        'type',
+        'link_id',
+        'language',
+        'phonecode',
+        'name',
+        'phone',
+        'email',
+        'country',
+        'created_at',
+      ],
+      where: {
+        ...(ctx.query.link_id ? { link_id: ctx.query.link_id } : {}),
+      },
       order: [['created_at', 'DESC']],
-      limit,
-      offset,
+      limit: pageSize,
+      offset: (page - 1) * pageSize,
     });
 
-    /* ---------- response ---------- */
     ctx.body = {
       success: true,
       data: rows,
       pagination: {
         total: count,
-        page: Number(page),
-        page_size: limit,
-        total_pages: Math.ceil(count / limit),
+        page,
+        page_size: pageSize,
       },
     };
+
   }
 }
 
