@@ -177,7 +177,7 @@
       const json = await safeJson(res);
 
       // สมมติ format: { success: true, admin: {...} } หรือ { success:false }
-      if (res.email) {
+      if (json && json.email) {
         setBadge(el("badgeSession"), "SESSION: OK", "ok");
         showLoggedIn(true);
         await loadUsers();
