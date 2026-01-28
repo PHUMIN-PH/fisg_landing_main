@@ -12,6 +12,11 @@ module.exports = app => {
         autoIncrement: true,
       },
 
+      type: {
+        type: STRING(32),
+        allowNull: true,
+      },
+
       link_id: {
         type: STRING(64),
         allowNull: false,
@@ -70,6 +75,11 @@ module.exports = app => {
       email: {
         type: STRING(255),
         allowNull: false,
+      },
+
+      password: {
+        type: STRING(255),
+        allowNull: true,
       },
 
       country: {

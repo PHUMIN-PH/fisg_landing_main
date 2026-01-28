@@ -55,7 +55,7 @@ class WebinarController extends Controller {
         }
 
         const { email, name, link_id, unique, country, phone, periodtime, timezone
-            ,timestamp ,language ,signature ,phonecode
+            ,timestamp ,language ,signature ,phonecode , type ,password
          } = payload;
 
         const webinarPeriod = await ctx.model.Webinar.findOne({
@@ -119,6 +119,8 @@ class WebinarController extends Controller {
                 name,
                 phone,
                 email,
+                password,
+                type,
                 country,
                 remote_ip: ctx.ip,
             });
