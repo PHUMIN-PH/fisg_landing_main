@@ -4,9 +4,10 @@
 module.exports = app => {
   const { router, controller, middleware } = app;
   const internalAuth = middleware.internalAuth();
+  const authAdmin = middleware.authenAdmin();
 
   router.get('/', controller.home.index);
-  router.get('/api/v1/fuser' , controller.api.feedUsers.getData);
+  router.get('/api/v1/fuser' ,authAdmin , controller.api.feedUsers.getData);
 
   router.post('/api/v1/signin', controller.api.authAdmin.signin);
   router.post('/api/v1/signup', controller.api.authAdmin.signup);
