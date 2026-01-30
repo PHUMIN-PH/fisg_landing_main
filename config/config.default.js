@@ -126,7 +126,7 @@ module.exports = appInfo => {
     encrypt: true,
     sameSite: 'none',
     // signed: true,
-    // secure: true,  // https
+    secure: true,  // https
   };
 
   // config.onerror = {
