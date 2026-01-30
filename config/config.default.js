@@ -23,6 +23,8 @@ module.exports = appInfo => {
     logging: false,
   };
 
+  config.proxy = true;
+
   config.cors = {
     origin: (ctx) => {
     const origin = ctx.get('origin');
