@@ -8,6 +8,7 @@ module.exports = app => {
 
   router.get('/', controller.home.index);
   router.get('/api/v1/fuser' ,authAdmin , controller.api.feedUsers.getData);
+  router.get('/api/v1/events',authAdmin, controller.api.fetchEvents.list);
 
   router.post('/api/v1/signin', controller.api.authAdmin.signin);
   router.post('/api/v1/signup', controller.api.authAdmin.signup);

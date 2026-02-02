@@ -7,8 +7,16 @@ class HomeController extends Controller {
     // const result = await ctx.service.crmMailService.sendConfirmationEmail({
     //   email: 'phuwis.dev@gmail.com',
     //   code: 'deposit-and-trade-to-win',
+    //   Date: '30 Jan, 2026',
+    //   Time: '14:00 (UTC+2)',
+    //   Language: 'English',
+    //   zoomLink: 'https://us06web.zoom.us/j/82031183371'
     // });
 
+    // Date: '30 Jan, 2026',
+    //   Time: '14:00 (UTC+2)',
+    //   Language: 'English',
+    //   zoomLink: 'https://us06web.zoom.us/j/82031183371'
     // const result = await ctx.service.pointsService.sendCheckPoints({
     // const result = await ctx.service.pointsService.sendResetPoints({
     // const result = await ctx.service.pointsService.redeemCheck({
@@ -23,53 +31,3 @@ class HomeController extends Controller {
 }
 
 module.exports = HomeController;
-// this.ctx.status = 404;
-
-
-// // app/controller/home.js
-// const { Controller } = require('egg');
-
-// class HomeController extends Controller {
-//   async index() {
-//     const { ctx } = this;
-//     await ctx.render('test.ejs', { result: null });
-//   }
-
-//   async redeemCheck() {
-//     const { ctx } = this;
-//     const { email, user_id } = ctx.request.body;
-
-//     const result = await ctx.service.pointsService.redeemCheck({
-//       email,
-//       user_id,
-//     });
-
-//     await ctx.render('test.ejs', { result });
-//   }
-
-//   async checkPoints() {
-//     const { ctx } = this;
-//     const { email, user_id } = ctx.request.body;
-
-//     const result = await ctx.service.pointsService.sendCheckPoints({
-//       email,
-//       user_id,
-//     });
-
-//     await ctx.render('test.ejs', { result });
-//   }
-
-//   async resetPoints() {
-//     const { ctx } = this;
-//     const { email, user_id } = ctx.request.body;
-
-//     const result = await ctx.service.pointsService.sendResetPoints({
-//       email,
-//       user_id,
-//     });
-
-//     await ctx.render('test.ejs', { result });
-//   }
-// }
-
-// module.exports = HomeController;

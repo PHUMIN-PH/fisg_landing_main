@@ -21,7 +21,7 @@ class FeedUsersDataController extends Controller {
     const limit = Math.min(Number(page_size) || 20, 100);
     const offset = (Number(page) - 1) * limit;
 
-    /* ---------- build where condition ---------- */
+    //build where condition 
     const where = {};
 
     if (event_name) where.event_name = event_name;
@@ -29,7 +29,7 @@ class FeedUsersDataController extends Controller {
     if (status) where.status = status;
     if (month_key) where.month_key = month_key;
 
-    /* ---------- query db WebinarRegister---------- */
+    // //query db WebinarRegister
     const { rows, count } = await ctx.model.WebinarRegister.findAndCountAll({
       where,
       attributes: [
@@ -48,7 +48,7 @@ class FeedUsersDataController extends Controller {
       offset,
     });
 
-    /* ---------- response ---------- */
+    //response 
     const data = rows.map(row => {
       const r = row.toJSON();
       return {

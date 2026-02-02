@@ -9,13 +9,11 @@ class AuthenController extends Controller {
         const { email, password } = ctx.request.body;
         // app/controller/api/authAdmin.js
 
-
         if (!email || !password) {
             ctx.throw(400, 'Email and password required');
         }
 
         console.log('AdminUser model:', ctx.model.AdminUsers);
-
 
         const admin = await this.app.model.AdminUsers.findOne({
             where: { email },
@@ -47,14 +45,15 @@ class AuthenController extends Controller {
             role: admin.role,
         };
 
+        ctx.status = 200;
         ctx.body = {
             success: true,
             admin: {
                 email: admin.email,
                 role: admin.role,
             },
-
         };
+        return;
     }
 
     async signup() {
