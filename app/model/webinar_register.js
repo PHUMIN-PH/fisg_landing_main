@@ -4,7 +4,7 @@ module.exports = app => {
   const { BIGINT, STRING, DATE } = app.Sequelize;
 
   const WebinarRegister = app.model.define(
-    'webinar_register',
+    'webinar_registers',
     {
       id: {
         type: BIGINT.UNSIGNED,
@@ -30,6 +30,11 @@ module.exports = app => {
       periodtime: {
         type: STRING(32),
         allowNull: false,
+      },
+
+      month_key: {
+        type: STRING(10),
+        allowNull: true,
       },
 
       timezone: {

@@ -10,6 +10,8 @@ class WebinarController extends Controller {
         const { ctx } = this;
         const now = new Date();
 
+        const month_key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
         const { data, key, 'cf-turnstile-response': token, } = ctx.request.body;
 
         /* validate  */
@@ -19,7 +21,7 @@ class WebinarController extends Controller {
             return;
         }
 
-        /* verify    Turnstile before stater  */
+        //verify    Turnstile before stater
         const cf_verify = await ctx.service.cfTurnstile.verify(token);
         if (!cf_verify) {
             ctx.status = 401;
@@ -27,7 +29,6 @@ class WebinarController extends Controller {
             return;
         }
 
-        /* RSA decrypt */
         let aesKey;
         try {
             const privateKey = forge.pki.privateKeyFromPem(ctx.app.config.rsaPrivateKey);
@@ -36,13 +37,12 @@ class WebinarController extends Controller {
                 'RSAES-PKCS1-V1_5'
             );
         } catch (err) {
-            // ctx.logger.error('RSA decrypt failed', err);
             ctx.status = 400;
             ctx.body = { msg: "KEY_DECRYPT_FAILED", token };
             return;
         }
 
-        /* AES decrypt payload */
+        // AES decrypt payload 
         let payload;
         try {
             const bytes = CryptoJS.AES.decrypt(data, aesKey);
@@ -55,8 +55,9 @@ class WebinarController extends Controller {
         }
 
         const { email, name, link_id, unique, country, phone, periodtime, timezone
-            ,timestamp ,language ,signature ,phonecode , type ,password
-         } = payload;
+            , timestamp, language, signature, phonecode, type, password,
+            webiDate, webiTime, webiLang, zoomLink,
+        } = payload;
 
         const webinarPeriod = await ctx.model.Webinar.findOne({
             where: {
@@ -65,7 +66,7 @@ class WebinarController extends Controller {
         });
 
         console.log(payload);
-        
+
 
         if (!webinarPeriod || !webinarPeriod.end_date) {
             ctx.status = 400;
@@ -73,12 +74,9 @@ class WebinarController extends Controller {
             return;
         }
 
-        // console.log(webinarPeriod.end_date);
-        // console.log(webinarPeriod.name);
-        // console.log(timezone);
-        if(webinarPeriod.end_date !== timezone){
+        if (webinarPeriod.end_date !== timezone) {
             ctx.status = 400;
-            ctx.body = { msg: 'Mistake. Please Do not hard code! '+ctx.ip+'' };
+            ctx.body = { msg: 'Mistake. Please Do not hard code! ' + ctx.ip + '' };
             return;
         }
 
@@ -114,6 +112,7 @@ class WebinarController extends Controller {
                 link_id,
                 unique_code: unique,
                 periodtime,
+                month_key,
                 timezone,
                 timestamp,
                 language,
@@ -128,10 +127,14 @@ class WebinarController extends Controller {
                 remote_ip: ctx.ip,
             });
 
-            // await ctx.service.crmMailService.sendConfirmationEmail({
-            //         email,
-            //         code: event_name,
-            //     });
+            await ctx.service.crmMailService.sendConfirmationEmail({
+                email,
+                code: event_name,
+                Date: webiDate, //'30 Jan, 2026',
+                Time: webiTime, //'14:00 (UTC+2)',
+                Language: webiLang, //'English',
+                zoomLink
+            });
             //     console.log("send email completed");
 
             ctx.body = {
