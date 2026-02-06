@@ -13,6 +13,8 @@ module.exports = {
 
       env: {
         NODE_ENV: 'production',
+        PM2_PUBLIC_KEY: 'ippf0w2aqtliqqo',
+        PM2_SECRET_KEY: 'n9ssurvnbl9fxf',
       },
 
       time: true,
