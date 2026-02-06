@@ -1,20 +1,16 @@
 module.exports = {
   apps: [
     {
-      name: 'fisg-landing-api',
-      script: 'npm',
-      args: 'start',
+      name: 'marketing-landing',
+      script: 'app.js',
 
-      // run mode
-      exec_mode: 'fork', // Egg ไม่จำเป็นต้อง cluster
+      exec_mode: 'fork',
       instances: 1,
 
-      // auto restart
       autorestart: true,
       watch: false,
       max_memory_restart: '2000M',
 
-      // env
       env: {
         NODE_ENV: 'production',
       },
