@@ -6,6 +6,10 @@ class EventsController extends Controller {
   async list() {
     const { ctx } = this;
 
+    if (!ctx.session.admin) {
+            ctx.throw(401);
+        }
+
     const rows = await ctx.model.Events.findAll({
       attributes: [
         [ctx.app.Sequelize.fn('DISTINCT', ctx.app.Sequelize.col('event_name')), 'event_name'],

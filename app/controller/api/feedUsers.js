@@ -5,9 +5,9 @@ class FeedUsersDataController extends Controller {
   async getData() {
     const { ctx } = this;
 
-    // if (!ctx.session.admin) {
-    //         ctx.throw(401);
-    //     }
+    if (!ctx.session.admin) {
+            ctx.throw(401);
+        }
 
     const {
       event_name,
