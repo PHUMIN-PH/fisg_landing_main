@@ -19,7 +19,6 @@ module.exports = appInfo => {
     database: process.env.DB_NAME || '',
     username: process.env.DB_USER || '',
     password: process.env.DB_PASSWORD || '',
-    
     logging: false,
   };
 
@@ -50,22 +49,7 @@ module.exports = appInfo => {
 
     return false;
   },
-    // origin: (ctx) => {
-    //   const allowList = [
-    //     'http://127.0.0.1:7001',
-    //     'http://localhost:7001',
-    //     'https://www.fisg.com',
-    //     'https://fisg.com',// prod
-    //     'https://event-system-ochre.vercel.app',
-    //     'http://localhost:4200'
-    //   ];
-
-    //   const origin = ctx.get('origin');
-    //   if (allowList.includes(origin)) {
-    //     return origin;
-    //   }
-    //   return '';
-    // },
+    
     allowMethods: 'GET,HEAD,PUT,POST,OPTIONS',
     // allowHeaders: 'Content-Type, Authorization',
     allowHeaders: [
@@ -106,6 +90,11 @@ module.exports = appInfo => {
     },
   };
 
+  config.logger = {
+  level: 'INFO',
+  dir: '/home/ubuntu/logs',
+};
+
 
   config.internalApiKey = process.env.INTERNAL_API_KEY;
   config.internalApiSecret = process.env.INTERNAL_API_SECRET;
@@ -130,16 +119,6 @@ module.exports = appInfo => {
     // signed: true,
     secure: true,  // https
   };
-
-  // config.onerror = {
-  //   all(err, ctx) {
-  //     ctx.status = err.status || 500;
-  //     ctx.body = {
-  //       success: false,
-  //       message: err.status === 401 ? 'Unauthorized' : 'Server Error',
-  //     };
-  //   },
-  // };
 
   // add your middleware config here
   // config.middleware = [];
