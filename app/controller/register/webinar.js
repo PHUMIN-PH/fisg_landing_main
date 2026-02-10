@@ -65,6 +65,14 @@ class WebinarController extends Controller {
             },
         });
 
+        if(!webinarPeriod){
+            await ctx.model.Webinar.create({
+                name: unique,
+                end_date:timezone,
+                
+            });
+        }
+
         console.log(payload);
 
 
