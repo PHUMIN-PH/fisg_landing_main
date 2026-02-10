@@ -1,36 +1,39 @@
 'use strict';
 const Service = require('egg').Service;
+const { log } = require('console');
 const crypto = require('crypto');
 
 class CrmMailService extends Service {
-  async sendConfirmationEmail({ email, code }) {
+  async sendConfirmationEmail({ email, code, Date: dateValue, Time: timeValue, Language: languageValue, zoomLink, }) {
     const { ctx, app } = this;
 
-    // 1. unix timestamp (milliseconds)
     const unix = Date.now();
-
-    // 2. api2_key 
     const api2Key = app.config.crm.apiMailKey;
 
-    // 3. (ต้องเรียง key จากตัวอักษร)
-    const source = `code=${code}&email=${email}`;
+    const body = {
+      email,
+      code,
+      params: {
+        Date: dateValue,
+        Time: timeValue,
+        Language: languageValue,
+        zoomLink,
+      },
+    };
 
-    // 4. sign (md5)
+    const source = Object.keys(body).sort().map((x) => `${x}=${typeof body[x] != 'string' ? JSON.stringify(body[x]) : body[x]}`).join('&');
+
     const sign = crypto
       .createHash('md5')
       .update(`${source}&${unix}&${api2Key}`)
       .digest('hex');
 
-    // 5. call CRM API Andy
     const res = await ctx.curl(
       'https://sgapi.isgfin.com/crm/api/send/mail',
       {
         method: 'POST',
         contentType: 'json',
-        data: {
-          email,
-          code,
-        },
+        data: body,
         headers: {
           unix,
           sign,
@@ -45,9 +48,3 @@ class CrmMailService extends Service {
 }
 
 module.exports = CrmMailService;
-
-
-
-  // curl -X GET "https://pma.isgfin.com/points/activity?email=phuwis.dev@gmail.com&start_time=2025-12-01&end_time=2025-12-08" \
-  // -H "sign: 948b641942a3419283cd83386ead148f" \
-  // -H "unix: 1768069258992"
