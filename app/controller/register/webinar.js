@@ -137,7 +137,7 @@ class WebinarController extends Controller {
 
             await ctx.service.crmMailService.sendConfirmationEmail({
                 email,
-                code: event_name,
+                code: link_id,
                 Date: webiDate, //'30 Jan, 2026',
                 Time: webiTime, //'14:00 (UTC+2)',
                 Language: webiLang, //'English',
