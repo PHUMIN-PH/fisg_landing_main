@@ -28,22 +28,56 @@ class CrmMailService extends Service {
       .update(`${source}&${unix}&${api2Key}`)
       .digest('hex');
 
-    const res = await ctx.curl(
-      'https://sgapi.isgfin.com/crm/api/send/mail',
-      {
-        method: 'POST',
-        contentType: 'json',
-        data: body,
-        headers: {
-          unix,
-          sign,
-        },
-        dataType: 'json',
-        timeout: 5000,
-      }
-    );
+    // const res = await ctx.curl(
+    //   'https://sgapi.isgfin.com/crm/api/send/mail',
+    //   {
+    //     method: 'POST',
+    //     contentType: 'json',
+    //     data: body,
+    //     headers: {
+    //       unix,
+    //       sign,
+    //     },
+    //     dataType: 'json',
+    //     timeout: 5000,
+    //   }
+    // );
+    try {
+      const res = await ctx.curl(
+        'https://sgapi.isgfin.com/crm/api/send/mail',
+        {
+          method: 'POST',
+          contentType: 'json',
+          data: body,
+          headers: {
+            unix,
+            sign,
+          },
+          dataType: 'json',
+          timeout: 5000,
+        }
+      );
 
-    return res.data;
+      if (res.status !== 200) {
+        ctx.logger.error('CRM MailServer HTTP error', res.status, res.data);
+        return { success: false, error: 'HTTP_ERROR' };
+      }
+
+      if (!res.data || res.data.success === false) {
+        ctx.logger.error('CRM Mail provider fail', res.data);
+        return { success: false, error: 'PROVIDER_FAIL' };
+      }
+
+      ctx.logger.info(`CRM Mail sent success → ${email}`);
+
+      return { success: true };
+
+    } catch (err) {
+      ctx.logger.error('CRM Mail exception', err);
+      return { success: false, error: err.message };
+    }
+
+    // return res.data;
   }
 }
 

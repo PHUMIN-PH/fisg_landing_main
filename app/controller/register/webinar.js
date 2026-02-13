@@ -56,37 +56,29 @@ class WebinarController extends Controller {
 
         const { email, name, link_id, unique, country, phone, periodtime, timezone
             , timestamp, language, signature, phonecode, type, password,
-            webiDate, webiTime, webiLang, zoomLink,
+            webiDate, webiTime, webiLang, zoomLink, activateMail,
         } = payload;
 
-        const webinarPeriod = await ctx.model.Webinar.findOne({
-            where: {
-                name: unique,
-            },
+        let webinarPeriod = await ctx.model.Webinar.findOne({
+            where: { name: unique },
         });
 
-        if(!webinarPeriod){
-            await ctx.model.Webinar.create({
+        if (!webinarPeriod) {
+            webinarPeriod = await ctx.model.Webinar.create({
                 name: unique,
-                end_date:timezone,
-                
+                end_date: timezone,
+                status: 'auto-created',
             });
+        } else {
+            // ถ้ามีอยู่แล้ว แต่ timezone ไม่ตรง → reject
+            if (webinarPeriod.end_date !== timezone) {
+                ctx.status = 400;
+                ctx.body = { msg: 'WEBINAR_TIME_MISMATCH. Please Do not hard code! ' + ctx.ip + '' };
+                return;
+            }
         }
 
         console.log(payload);
-
-
-        if (!webinarPeriod || !webinarPeriod.end_date) {
-            ctx.status = 400;
-            ctx.body = { msg: 'WEBINAR_NOT_FOUND' };
-            return;
-        }
-
-        if (webinarPeriod.end_date !== timezone) {
-            ctx.status = 400;
-            ctx.body = { msg: 'Mistake. Please Do not hard code! ' + ctx.ip + '' };
-            return;
-        }
 
         const registrationEndTime = splitEndDateTimeUTC(timezone);
         const nowTime = nowUTCDateTime();
@@ -134,16 +126,33 @@ class WebinarController extends Controller {
                 country,
                 remote_ip: ctx.ip,
             });
+            if (activateMail === 'on') {
+                const emailResult =
+                    await ctx.service.crmMailService.sendConfirmationEmail({
+                        email,
+                        code: link_id,
+                        Date: webiDate,
+                        Time: webiTime,
+                        Language: webiLang,
+                        zoomLink,
+                        // code: 'fisg-webinar-confirmation',
+                        // Date: '30 Jan, 2026',
+                        // Time: '14:00 (UTC+2)',
+                        // Language: 'English',
+                        // zoomLink: 'https://us06web.zoom.us/j/82031183371'
+                    });
 
-            await ctx.service.crmMailService.sendConfirmationEmail({
-                email,
-                code: link_id,
-                Date: webiDate, //'30 Jan, 2026',
-                Time: webiTime, //'14:00 (UTC+2)',
-                Language: webiLang, //'English',
-                zoomLink
-            });
-            //     console.log("send email completed");
+                if (!emailResult.success) {
+                    ctx.logger.error(`Email send failed for ${email}`);
+                }
+                ctx.body = {
+                    success: true,
+                    msg: 'success',
+                    email_sent: emailResult.success,
+                };
+                return;
+            }
+
 
             ctx.body = {
                 success: true,
