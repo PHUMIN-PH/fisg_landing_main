@@ -5,9 +5,9 @@ class FeedUsersDataController extends Controller {
   async getData() {
     const { ctx } = this;
 
-    if (!ctx.session.admin) {
-            ctx.throw(401);
-        }
+    // if (!ctx.session.admin) {
+    //   ctx.throw(401);
+    // }
 
     const {
       event_name,
@@ -35,10 +35,11 @@ class FeedUsersDataController extends Controller {
       attributes: [
         'type',
         'link_id',
+        'unique_code',
         'language',
         'phonecode',
-        'name',
         'phone',
+        'name',
         'email',
         'country',
         'created_at',
@@ -53,6 +54,9 @@ class FeedUsersDataController extends Controller {
       const r = row.toJSON();
       return {
         ...r,
+        // name: maskName(r.name),
+        email: maskEmail(r.email),
+        phone: maskPhone(r.phone),
         created_at: formatDate(r.created_at),
       };
     });
@@ -85,5 +89,43 @@ function formatDate(dt) {
 
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 }
+
+function maskEmail(email) {
+  if (!email) return null;
+
+  const [name, domain] = email.split('@');
+  if (!name || !domain) return email;
+
+  const visible = name.slice(0, 7);
+  return `${visible}******@${domain}`;
+}
+
+function maskPhone(phone) {
+  if (!phone) return null;
+
+  const str = String(phone);
+
+  if (str.length <= 4) {
+    return str;
+  }
+
+  const last4 = str.slice(-4);
+  const masked = '*'.repeat(str.length - 4);
+
+  return masked + last4;
+}
+
+
+function maskName(name) {
+  if (!name) return null;
+
+  if (name.length <= 3) {
+    return name[0] + '***';
+  }
+
+  const visible = name.slice(0, 7);
+  return `${visible}******`;
+}
+
 
 module.exports = FeedUsersDataController;
