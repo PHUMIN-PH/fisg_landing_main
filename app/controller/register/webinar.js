@@ -130,21 +130,19 @@ class WebinarController extends Controller {
                 const emailResult =
                     await ctx.service.crmMailService.sendConfirmationEmail({
                         email,
-                        code: link_id,
+                        code: 'fisg-webinar-confirmation', //link_id,
                         Date: webiDate,
                         Time: webiTime,
                         Language: webiLang,
                         zoomLink,
-                        // code: 'fisg-webinar-confirmation',
-                        // Date: '30 Jan, 2026',
-                        // Time: '14:00 (UTC+2)',
-                        // Language: 'English',
-                        // zoomLink: 'https://us06web.zoom.us/j/82031183371'
                     });
 
                 if (!emailResult.success) {
                     ctx.logger.error(`Email send failed for ${email}`);
+                    ctx.logger.error(`emailResult ${emailResult}`);
+                    console.log('emailResult : ',emailResult);
                 }
+                
                 ctx.body = {
                     success: true,
                     msg: 'success',
@@ -152,7 +150,6 @@ class WebinarController extends Controller {
                 };
                 return;
             }
-
 
             ctx.body = {
                 success: true,
