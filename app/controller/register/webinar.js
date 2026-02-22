@@ -82,8 +82,6 @@ class WebinarController extends Controller {
 
         const registrationEndTime = splitEndDateTimeUTC(timezone);
         const nowTime = nowUTCDateTime();
-        // console.log("Current Time : ", nowTime);
-        // console.log("EndDateTime : ", registrationEndTime);
 
         if (nowTime > registrationEndTime) {
             ctx.body = {
@@ -147,6 +145,7 @@ class WebinarController extends Controller {
                     success: true,
                     msg: 'success',
                     email_sent: emailResult.success,
+                    data: emailResult,
                 };
                 return;
             }

@@ -45,6 +45,21 @@ class AuthenController extends Controller {
             role: admin.role,
         };
 
+        if(hasAdmin){
+            await ctx.model.AdminLogs.create({
+                admin_id : admin.id,
+                admin_email : admin.email,
+                action : "Login",
+                resource : "",
+                reaget_id: "",
+                status: "success",
+                message : "",
+                ip_address : ctx.ip,
+                user_agent : ctx.user_agent,
+                payload : "",
+            });
+        }
+
         ctx.status = 200;
         ctx.body = {
             success: true,

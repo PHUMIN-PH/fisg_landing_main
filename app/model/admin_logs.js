@@ -65,7 +65,7 @@ module.exports = app => {
 
       created_at: {
         type: DATE,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
